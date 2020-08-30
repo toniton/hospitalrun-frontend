@@ -20,6 +20,7 @@ export const AddRelatedPersonModalButton = () => {
 
   const hideModal = () => {
     setVisible(false)
+    form.resetFields()
   }
 
   const onOk = () => {

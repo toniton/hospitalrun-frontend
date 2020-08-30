@@ -2,7 +2,6 @@ import { List, Button, Spin, Empty } from 'antd'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import Loading from '../../../shared/components/Loading'
 import useTranslator from '../../../shared/hooks/useTranslator'
 import Allergy from '../../../shared/model/Allergy'
 import usePatientAllergies from '../../hooks/usePatientAllergies'
@@ -18,7 +17,7 @@ export const AllergiesList = (props: Props) => {
   const { data, status } = usePatientAllergies(patientId)
 
   if (data === undefined || status === 'loading') {
-    return <Loading />
+    return <Spin />
   }
 
   if (data.length === 0) {
@@ -27,7 +26,7 @@ export const AllergiesList = (props: Props) => {
 
   return (
     <>
-      {data ? (
+      {data.length > 0 ? (
         <List
           itemLayout="horizontal"
           dataSource={data}
@@ -50,7 +49,7 @@ export const AllergiesList = (props: Props) => {
           }}
         />
       ) : (
-        <Spin />
+        <Empty description={t('patient.allergies.warning.noAllergies')} />
       )}
     </>
   )
