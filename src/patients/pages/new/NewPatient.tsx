@@ -1,5 +1,5 @@
-import { Button, Toast } from '@hospitalrun/components'
-import React, { useState } from 'react'
+import { Toast } from '@hospitalrun/components'
+import React, { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
@@ -25,7 +25,7 @@ const NewPatient = () => {
   const { createError } = useSelector((state: RootState) => state.patient)
   const { patients } = Object(useSelector((state: RootState) => state.patients))
 
-  const [patient, setPatient] = useState({} as Patient)
+  const [patient, setPatient] = useState<Patient | any>({})
   const [duplicatePatient, setDuplicatePatient] = useState<Patient | undefined>(undefined)
   const [showDuplicateNewPatientModal, setShowDuplicateNewPatientModal] = useState<boolean>(false)
 
@@ -43,40 +43,43 @@ const NewPatient = () => {
     history.push('/patients')
   }
 
-  const onSuccessfulSave = (newPatient: Patient) => {
-    history.push(`/patients/${newPatient.id}`)
-    Toast(
-      'success',
-      t('states.success'),
-      `${t('patients.successfullyCreated')} ${newPatient.fullName}`,
-    )
-  }
-
-  const onSave = () => {
-    let duplicatePatients = []
-    if (patients !== undefined) {
-      duplicatePatients = patients.filter((existingPatient: any) =>
-        isPossibleDuplicatePatient(patient, existingPatient),
+  const onSuccessfulSave = useCallback(
+    (newPatient: Patient) => {
+      history.push(`/patients/${newPatient.id}`)
+      Toast(
+        'success',
+        t('states.success'),
+        `${t('patients.successfullyCreated')} ${newPatient.fullName}`,
       )
-    }
+    },
+    [history, t],
+  )
 
-    if (duplicatePatients.length > 0) {
-      setShowDuplicateNewPatientModal(true)
-      setDuplicatePatient(duplicatePatients as Patient)
-    } else {
-      dispatch(createPatient(patient, onSuccessfulSave))
-    }
+  const onSubmit = useCallback(
+    (newPatient: Patient) => {
+      setPatient(newPatient)
+      let duplicatePatients = []
+      if (patients !== undefined) {
+        duplicatePatients = patients.filter((existingPatient: any) =>
+          isPossibleDuplicatePatient(newPatient, existingPatient),
+        )
+      }
 
-    const testCase = [isPossibleDuplicatePatient(patient, testPatient)]
-    if (testCase.length > 0) {
-      return true
-    }
-    return false
-  }
+      if (duplicatePatients.length > 0) {
+        setShowDuplicateNewPatientModal(true)
+        setDuplicatePatient(duplicatePatients as Patient)
+      } else {
+        dispatch(createPatient(newPatient, onSuccessfulSave))
+      }
 
-  const onPatientChange = (newPatient: Partial<Patient>) => {
-    setPatient(newPatient as Patient)
-  }
+      const testCase = [isPossibleDuplicatePatient(newPatient, testPatient)]
+      if (testCase.length > 0) {
+        return true
+      }
+      return false
+    },
+    [dispatch, onSuccessfulSave, patients, testPatient],
+  )
 
   const createDuplicateNewPatient = () => {
     dispatch(createPatient(patient, onSuccessfulSave))
@@ -91,19 +94,10 @@ const NewPatient = () => {
       <GeneralInformation
         patient={patient}
         isEditable
-        onChange={onPatientChange}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
         error={createError}
       />
-      <div className="row float-right">
-        <div className="btn-group btn-group-lg mt-3">
-          <Button className="btn-save mr-2" color="success" onClick={onSave}>
-            {t('actions.save')}
-          </Button>
-          <Button className="btn-cancel" color="danger" onClick={onCancel}>
-            {t('actions.cancel')}
-          </Button>
-        </div>
-      </div>
 
       <DuplicateNewPatientModal
         duplicatePatient={duplicatePatient}

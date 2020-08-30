@@ -63,13 +63,13 @@ const HospitalRun = () => {
         </Header>
         <Content style={{ padding: '16px', marginTop: 64, marginLeft: 256 }}>
           <Typography.Title level={2}>{title}</Typography.Title>
-          <ButtonToolBar />
+          <Breadcrumbs />
           <Divider />
+          <ButtonToolBar />
           <div className="container-fluid">
             <div className="row">
               <ButtonBarProvider>
                 <main role="main">
-                  <Breadcrumbs />
                   <div>
                     <Switch>
                       <Route exact path="/" component={Dashboard} />

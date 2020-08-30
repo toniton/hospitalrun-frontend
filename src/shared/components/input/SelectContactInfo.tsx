@@ -13,16 +13,18 @@ export enum ContactInfoTypes {
   old = 'old',
 }
 
-export const SelectContactInfo = (): ReactElement => {
+export const SelectContactInfo = (props: any): ReactElement => {
   const { t } = useTranslator()
   const typeOptions = Object.values(ContactInfoTypes).map((value) => ({
     label: t(`patient.contactInfoType.options.${value}`),
     value: `${value}`,
   }))
   return (
-    <Select style={{ minWidth: '120px' }}>
+    <Select style={{ minWidth: '80px', width: '100%', maxWidth: '120px' }} {...props}>
       {typeOptions.map(({ label, value }) => (
-        <Option value={value}>{label}</Option>
+        <Option key={value} value={value}>
+          {label}
+        </Option>
       ))}
     </Select>
   )

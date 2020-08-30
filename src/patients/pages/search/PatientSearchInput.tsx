@@ -1,10 +1,11 @@
-import { TextInput } from '@hospitalrun/components'
+import { Input } from 'antd'
 import React, { useEffect, useState } from 'react'
 
 import useDebounce from '../../../shared/hooks/useDebounce'
 import useTranslator from '../../../shared/hooks/useTranslator'
 import PatientSearchRequest from '../../models/PatientSearchRequest'
 
+const { Search } = Input
 interface Props {
   onChange: (searchRequest: PatientSearchRequest) => void
 }
@@ -22,18 +23,16 @@ const PatientSearchInput = (props: Props) => {
     })
   }, [debouncedSearchText, onChange])
 
-  const onSearchBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const queryString = event.currentTarget.value
+  const onSearchBoxChange = (queryString: string) => {
+    console.log(queryString)
     setSearchText(queryString)
   }
 
   return (
-    <TextInput
-      size="lg"
-      type="text"
-      onChange={onSearchBoxChange}
-      value={searchText}
+    <Search
       placeholder={t('actions.search')}
+      onSearch={onSearchBoxChange}
+      style={{ width: '100vw', maxWidth: '280px' }}
     />
   )
 }

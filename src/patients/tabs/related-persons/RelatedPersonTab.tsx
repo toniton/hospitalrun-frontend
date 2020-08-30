@@ -1,4 +1,4 @@
-import { Button, Alert, Spinner, Table } from '@hospitalrun/components'
+import { Button, List, Spin, Space, Card } from 'antd'
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
@@ -10,13 +10,13 @@ import Patient from '../../../shared/model/Patient'
 import { Permissions } from '../../../shared/model/Permissions'
 import { RootState } from '../../../shared/store'
 import { removeRelatedPerson } from '../../patient-slice'
-import AddRelatedPersonModal from './AddRelatedPersonModal'
+import { AddRelatedPersonModalButton } from './AddRelatedPersonModal'
 
 interface Props {
   patient: Patient
 }
 
-const RelatedPersonTab = (props: Props) => {
+export const RelatedPersonTab = (props: Props) => {
   const dispatch = useDispatch()
   const history = useHistory()
 
@@ -26,7 +26,6 @@ const RelatedPersonTab = (props: Props) => {
   const { patient } = props
   const { t } = useTranslator()
   const { permissions } = useSelector((state: RootState) => state.user)
-  const [showNewRelatedPersonModal, setShowRelatedPersonModal] = useState<boolean>(false)
   const [relatedPersons, setRelatedPersons] = useState<Patient[] | undefined>(undefined)
 
   const breadcrumbs = [
@@ -55,78 +54,40 @@ const RelatedPersonTab = (props: Props) => {
     fetchRelatedPersons()
   }, [patient.relatedPersons])
 
-  const onNewRelatedPersonClick = () => {
-    setShowRelatedPersonModal(true)
-  }
-
-  const closeNewRelatedPersonModal = () => {
-    setShowRelatedPersonModal(false)
-  }
-
-  const onRelatedPersonDelete = (relatedPerson: Patient) => {
-    dispatch(removeRelatedPerson(patient.id, relatedPerson.id))
+  const onRelatedPersonDelete = (relatedPersonId: string) => {
+    dispatch(removeRelatedPerson(patient.id, relatedPersonId))
   }
 
   return (
-    <div>
-      <div className="row">
-        <div className="col-md-12 d-flex justify-content-end">
-          {permissions.includes(Permissions.WritePatients) && (
-            <Button
-              outlined
-              color="success"
-              icon="add"
-              iconLocation="left"
-              onClick={onNewRelatedPersonClick}
-            >
-              {t('patient.relatedPersons.add')}
-            </Button>
-          )}
-        </div>
-      </div>
-      <br />
-      <div className="row">
-        <div className="col-md-12">
-          {relatedPersons ? (
-            relatedPersons.length > 0 ? (
-              <Table
-                getID={(row) => row.id}
-                data={relatedPersons}
-                columns={[
-                  { label: t('patient.givenName'), key: 'givenName' },
-                  { label: t('patient.familyName'), key: 'familyName' },
-                  { label: t('patient.relatedPersons.relationshipType'), key: 'type' },
-                ]}
-                actionsHeaderText={t('actions.label')}
+    <Card bordered={false}>
+      <Space style={{ marginBottom: 16 }}>
+        {permissions.includes(Permissions.WritePatients) && <AddRelatedPersonModalButton />}
+      </Space>
+      {relatedPersons ? (
+        <List
+          itemLayout="horizontal"
+          dataSource={relatedPersons}
+          renderItem={(relative) => {
+            const { id, givenName, familyName = '', type = '' } = relative
+            return (
+              <List.Item
                 actions={[
-                  { label: t('actions.view'), action: (row) => navigateTo(`/patients/${row.id}`) },
-                  {
-                    label: t('actions.delete'),
-                    action: (row) => onRelatedPersonDelete(row as Patient),
-                    buttonColor: 'danger',
-                  },
+                  <Button key="view" onClick={() => navigateTo(`/patients/${id}`)}>
+                    {t('actions.view')}
+                  </Button>,
+                  <Button key="delete" onClick={() => onRelatedPersonDelete(id)}>
+                    {t('actions.delete')}
+                  </Button>,
                 ]}
-              />
-            ) : (
-              <Alert
-                color="warning"
-                title={t('patient.relatedPersons.warning.noRelatedPersons')}
-                message={t('patient.relatedPersons.addRelatedPersonAbove')}
-              />
+              >
+                <List.Item.Meta title={`${givenName} ${familyName}`} description={type} />
+              </List.Item>
             )
-          ) : (
-            <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
-          )}
-        </div>
-      </div>
-
-      <AddRelatedPersonModal
-        show={showNewRelatedPersonModal}
-        toggle={closeNewRelatedPersonModal}
-        onCloseButtonClick={closeNewRelatedPersonModal}
-      />
-    </div>
+          }}
+        />
+      ) : (
+        <Spin />
+      )}
+    </Card>
   )
 }
-
-export default RelatedPersonTab

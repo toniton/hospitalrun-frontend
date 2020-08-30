@@ -1,5 +1,5 @@
-import { Panel, Spinner, TabsHeader, Tab, Button } from '@hospitalrun/components'
-import React, { useEffect } from 'react'
+import { Tabs, Spin } from 'antd'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   useParams,
@@ -11,31 +11,21 @@ import {
 } from 'react-router-dom'
 
 import useAddBreadcrumbs from '../../../page-header/breadcrumbs/useAddBreadcrumbs'
-import { useButtonToolbarSetter } from '../../../page-header/button-toolbar/ButtonBarProvider'
 import useTitle from '../../../page-header/title/useTitle'
 import useTranslator from '../../../shared/hooks/useTranslator'
-import Patient from '../../../shared/model/Patient'
-import { Permissions } from '../../../shared/model/Permissions'
 import { RootState } from '../../../shared/store'
 import { GeneralInformation } from '../../forms/GeneralInformation'
 import { fetchPatient } from '../../patient-slice'
 import Allergies from '../../tabs/allergies/Allergies'
-import AppointmentsList from '../../tabs/appointments/AppointmentsList'
+import { AppointmentsList } from '../../tabs/appointments/AppointmentsList'
 import CarePlanTab from '../../tabs/care-plans/CarePlanTab'
 import Diagnoses from '../../tabs/diagnoses/Diagnoses'
 import LabsTab from '../../tabs/labs/LabsTab'
 import NoteTab from '../../tabs/notes/NoteTab'
-import RelatedPersonTab from '../../tabs/related-persons/RelatedPersonTab'
+import { RelatedPersonTab } from '../../tabs/related-persons/RelatedPersonTab'
 import VisitTab from '../../tabs/visits/VisitTab'
-import { getPatientFullName } from '../../util/patient-name-util'
 
-const getPatientCode = (p: Patient): string => {
-  if (p) {
-    return p.code
-  }
-
-  return ''
-}
+const { TabPane } = Tabs
 
 const ViewPatient = () => {
   const { t } = useTranslator()
@@ -43,133 +33,96 @@ const ViewPatient = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const { path } = useRouteMatch()
+  const [activeTab, setActiveTab] = useState<string>('')
 
   const { patient, status } = useSelector((state: RootState) => state.patient)
   const { permissions } = useSelector((state: RootState) => state.user)
 
-  useTitle(`${getPatientFullName(patient)} (${getPatientCode(patient)})`)
+  const { givenName, familyName = '', suffix = '', code = '' } = patient
+  const fullName = `${givenName} ${familyName} ${suffix}`.trim()
 
-  const setButtonToolBar = useButtonToolbarSetter()
+  const onTabChange = useCallback(
+    (tabKey: string) => {
+      const tabPath = tabKey === 'generalInformation' ? '' : `/${tabKey}`
+      history.push(`/patients/${patient.id}${tabPath}`)
+    },
+    [history, patient],
+  )
+
+  useEffect(() => {
+    let key = location.pathname.split('/').pop() || patient.id
+    key = key === patient.id ? 'generalInformation' : key
+    setActiveTab(key)
+  }, [location, activeTab, patient])
+
+  useTitle(`${fullName} (${code})`)
 
   const breadcrumbs = [
     { i18nKey: 'patients.label', location: '/patients' },
-    { text: getPatientFullName(patient), location: `/patients/${patient.id}` },
+    { text: fullName, location: `/patients/${patient.id}` },
   ]
   useAddBreadcrumbs(breadcrumbs, true)
 
   const { id } = useParams()
+
   useEffect(() => {
     if (id) {
       dispatch(fetchPatient(id))
     }
-
-    const buttons = []
-    if (permissions.includes(Permissions.WritePatients)) {
-      buttons.push(
-        <Button
-          key="editPatientButton"
-          color="success"
-          icon="edit"
-          outlined
-          onClick={() => {
-            history.push(`/patients/edit/${patient.id}`)
-          }}
-        >
-          {t('actions.edit')}
-        </Button>,
-      )
-    }
-
-    setButtonToolBar(buttons)
-
-    return () => {
-      setButtonToolBar([])
-    }
-  }, [dispatch, id, setButtonToolBar, history, patient.id, permissions, t])
+  }, [dispatch, id, history, permissions])
 
   if (status === 'loading' || !patient) {
-    return <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
+    return <Spin />
   }
 
   return (
-    <div>
-      <TabsHeader>
-        <Tab
-          active={location.pathname === `/patients/${patient.id}`}
-          label={t('patient.generalInformation')}
-          onClick={() => history.push(`/patients/${patient.id}`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/relatedpersons`}
-          label={t('patient.relatedPersons.label')}
-          onClick={() => history.push(`/patients/${patient.id}/relatedpersons`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/appointments`}
-          label={t('scheduling.appointments.label')}
-          onClick={() => history.push(`/patients/${patient.id}/appointments`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/allergies`}
-          label={t('patient.allergies.label')}
-          onClick={() => history.push(`/patients/${patient.id}/allergies`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/diagnoses`}
-          label={t('patient.diagnoses.label')}
-          onClick={() => history.push(`/patients/${patient.id}/diagnoses`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/notes`}
-          label={t('patient.notes.label')}
-          onClick={() => history.push(`/patients/${patient.id}/notes`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/labs`}
-          label={t('patient.labs.label')}
-          onClick={() => history.push(`/patients/${patient.id}/labs`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/care-plans`}
-          label={t('patient.carePlan.label')}
-          onClick={() => history.push(`/patients/${patient.id}/care-plans`)}
-        />
-        <Tab
-          active={location.pathname === `/patients/${patient.id}/visits`}
-          label={t('patient.visits.label')}
-          onClick={() => history.push(`/patients/${patient.id}/visits`)}
-        />
-      </TabsHeader>
-      <Panel>
+    <Tabs defaultActiveKey="generalInformation" activeKey={activeTab} onChange={onTabChange}>
+      <TabPane tab={t('patient.generalInformation')} key="generalInformation">
         <Route exact path={path}>
           <GeneralInformation patient={patient} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.relatedPersons.label')} key="relatedPersons">
         <Route exact path={`${path}/relatedpersons`}>
           <RelatedPersonTab patient={patient} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('scheduling.appointments.label')} key="appointments">
         <Route exact path={`${path}/appointments`}>
           <AppointmentsList patientId={patient.id} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.allergies.label')} key="allergies">
         <Route path={`${path}/allergies`}>
           <Allergies patient={patient} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.diagnoses.label')} key="diagnoses">
         <Route exact path={`${path}/diagnoses`}>
           <Diagnoses patient={patient} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.notes.label')} key="notes">
         <Route exact path={`${path}/notes`}>
           <NoteTab patient={patient} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.labs.label')} key="labs">
         <Route exact path={`${path}/labs`}>
           <LabsTab patientId={patient.id} />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.carePlan.label')} key="carePlan">
         <Route path={`${path}/care-plans`}>
           <CarePlanTab />
         </Route>
+      </TabPane>
+      <TabPane tab={t('patient.visits.label')} key="visits">
         <Route path={`${path}/visits`}>
           <VisitTab />
         </Route>
-      </Panel>
-    </div>
+      </TabPane>
+    </Tabs>
   )
 }
 

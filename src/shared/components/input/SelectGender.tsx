@@ -18,7 +18,7 @@ export const SelectGender = (props: any) => {
   return (
     <Select {...props} style={{ minWidth: '120px' }}>
       {options.map(({ label, value }) => (
-        <Option value={value}>{label}</Option>
+        <Option key={value} value={value}>{label}</Option>
       ))}
     </Select>
   )

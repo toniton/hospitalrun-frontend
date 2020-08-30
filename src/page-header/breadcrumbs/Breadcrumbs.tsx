@@ -18,7 +18,7 @@ export const Breadcrumbs = () => {
     <Breadcrumb style={{ marginBottom: '16px' }}>
       {breadcrumbs.map(({ i18nKey, text, location }, index) => {
         const isLast = index === breadcrumbs.length - 1
-        const url = isLast ? location : '#'
+        const url = !isLast ? location : '#'
         return (
           <Breadcrumb.Item key={location}>
             <Link to={url}>{i18nKey ? t(i18nKey) : text}</Link>

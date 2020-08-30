@@ -13,7 +13,7 @@ interface NewAllergyModalProps {
   onCloseButtonClick: () => void
 }
 
-const NewAllergyModal = (props: NewAllergyModalProps) => {
+export const NewAllergyModal = (props: NewAllergyModalProps) => {
   const { show, onCloseButtonClick, patientId } = props
   const { t } = useTranslator()
   const [mutate] = useAddAllergy()
@@ -89,5 +89,3 @@ const NewAllergyModal = (props: NewAllergyModalProps) => {
     />
   )
 }
-
-export default NewAllergyModal

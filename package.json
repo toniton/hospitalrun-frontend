@@ -4,10 +4,27 @@
   "description": "React frontend for HospitalRun",
   "private": false,
   "license": "MIT",
+  "resolutions": {
+    "moment": "2.24.0"
+  },
+  "comments": {
+    "resolutions": "Added this key as temp fix https://github.com/moment/moment/issues/5484"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HospitalRun/hospitalrun-frontend.git"
+  },
+  "author": "Jack Meyer",
+  "contributors": [
+    "Maksim Sinik",
+    "Stefano Casasola"
+  ],
   "dependencies": {
     "@ant-design/icons": "~4.2.2",
     "@hospitalrun/components": "~1.16.1",
     "@reduxjs/toolkit": "~1.4.0",
+    "@types/escape-string-regexp": "~2.0.1",
+    "@types/pouchdb-find": "~6.3.4",
     "antd": "~4.5.4",
     "bootstrap": "~4.5.0",
     "date-fns": "~2.15.0",
@@ -41,23 +58,8 @@
     "shortid": "^2.2.15",
     "typescript": "~3.8.3",
     "uuid": "^8.0.0",
-    "validator": "^13.0.0"
+    "validator": "~13.1.1"
   },
-  "resolutions": {
-    "moment": "2.24.0"
-  },
-  "comments": {
-    "resolutions": "Added this key as temp fix https://github.com/moment/moment/issues/5484"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/HospitalRun/hospitalrun-frontend.git"
-  },
-  "author": "Jack Meyer",
-  "contributors": [
-    "Maksim Sinik",
-    "Stefano Casasola"
-  ],
   "devDependencies": {
     "@commitlint/cli": "~8.3.5",
     "@commitlint/config-conventional": "~9.1.1",
@@ -66,11 +68,9 @@
     "@testing-library/react": "~10.4.0",
     "@testing-library/react-hooks": "~3.4.1",
     "@types/enzyme": "^3.10.5",
-    "@types/escape-string-regexp": "~2.0.1",
     "@types/jest": "~26.0.0",
     "@types/lodash": "^4.14.150",
     "@types/node": "~14.0.0",
-    "@types/pouchdb-find": "~6.3.4",
     "@types/pouchdb": "~6.4.0",
     "@types/react": "~16.9.17",
     "@types/react-dom": "~16.9.4",
@@ -147,8 +147,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint-staged",
-      "commit-msg": "npm run commitlint -- -E HUSKY_GIT_PARAMS"
+      "pre-commit": "npm run lint-staged"
     }
   },
   "config": {
@@ -159,7 +158,6 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "npm run lint:fix",
-      "npm run test:ci",
       "git add ."
     ]
   }

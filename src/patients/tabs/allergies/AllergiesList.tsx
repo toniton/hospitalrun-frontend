@@ -1,4 +1,4 @@
-import { Alert, List, ListItem } from '@hospitalrun/components'
+import { List, Button, Spin, Empty } from 'antd'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
@@ -11,7 +11,7 @@ interface Props {
   patientId: string
 }
 
-const AllergiesList = (props: Props) => {
+export const AllergiesList = (props: Props) => {
   const { patientId } = props
   const history = useHistory()
   const { t } = useTranslator()
@@ -22,28 +22,36 @@ const AllergiesList = (props: Props) => {
   }
 
   if (data.length === 0) {
-    return (
-      <Alert
-        color="warning"
-        title={t('patient.allergies.warning.noAllergies')}
-        message={t('patient.allergies.addAllergyAbove')}
-      />
-    )
+    return <Empty description={t('patient.allergies.warning.noAllergies')} />
   }
 
   return (
-    <List>
-      {data.map((a: Allergy) => (
-        <ListItem
-          action
-          key={a.id}
-          onClick={() => history.push(`/patients/${patientId}/allergies/${a.id}`)}
-        >
-          {a.name}
-        </ListItem>
-      ))}
-    </List>
+    <>
+      {data ? (
+        <List
+          itemLayout="horizontal"
+          dataSource={data}
+          renderItem={(allergy: Allergy) => {
+            const { id, name } = allergy
+            return (
+              <List.Item
+                actions={[
+                  <Button
+                    key="view"
+                    onClick={() => history.push(`/patients/${patientId}/allergies/${id}`)}
+                  >
+                    {t('actions.view')}
+                  </Button>,
+                ]}
+              >
+                <List.Item.Meta title={name} />
+              </List.Item>
+            )
+          }}
+        />
+      ) : (
+        <Spin />
+      )}
+    </>
   )
 }
-
-export default AllergiesList
