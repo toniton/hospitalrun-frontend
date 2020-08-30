@@ -1,4 +1,4 @@
-import Permissions from '../../model/Permissions'
+import { Permissions } from '../../model/Permissions'
 
 type Page = { permission: Permissions | null; label: string; path: string; icon: string }
 

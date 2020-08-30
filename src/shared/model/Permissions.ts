@@ -1,4 +1,4 @@
-enum Permissions {
+export enum Permissions {
   ReadPatients = 'read:patients',
   WritePatients = 'write:patients',
   ReadAppointments = 'read:appointments',
@@ -27,5 +27,3 @@ enum Permissions {
   RequestImaging = 'write:imaging',
   ViewImagings = 'read:imagings',
 }
-
-export default Permissions

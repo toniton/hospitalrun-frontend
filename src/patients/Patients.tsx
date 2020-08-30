@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux'
 import { Switch } from 'react-router-dom'
 
 import PrivateRoute from '../shared/components/PrivateRoute'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import { RootState } from '../shared/store'
-import EditPatient from './edit/EditPatient'
-import NewPatient from './new/NewPatient'
-import ViewPatients from './search/ViewPatients'
-import ViewPatient from './view/ViewPatient'
+import EditPatient from './pages/edit/EditPatient'
+import NewPatient from './pages/new/NewPatient'
+import ViewPatients from './pages/search/ViewPatients'
+import ViewPatient from './pages/view/ViewPatient'
 
 const Patients = () => {
   const permissions = useSelector((state: RootState) => state.user.permissions)

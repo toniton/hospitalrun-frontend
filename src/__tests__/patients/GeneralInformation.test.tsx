@@ -6,7 +6,7 @@ import { createMemoryHistory, MemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router-dom'
 
-import GeneralInformation from '../../patients/GeneralInformation'
+import { GeneralInformation } from '../../patients/forms/GeneralInformation'
 import Patient from '../../shared/model/Patient'
 
 describe('Error handling', () => {

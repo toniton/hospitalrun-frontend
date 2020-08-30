@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { isAfter, isBefore, parseISO } from 'date-fns'
+import { isBefore } from 'date-fns'
 import { isEmpty } from 'lodash'
-import validator from 'validator'
 
 import PatientRepository from '../shared/db/PatientRepository'
 import Allergy from '../shared/model/Allergy'
@@ -13,7 +12,6 @@ import RelatedPerson from '../shared/model/RelatedPerson'
 import Visit from '../shared/model/Visit'
 import { AppThunk } from '../shared/store'
 import { uuid } from '../shared/util/uuid'
-import { cleanupPatient } from './util/set-patient-helper'
 
 interface PatientState {
   status: 'loading' | 'error' | 'completed'
@@ -181,99 +179,15 @@ export const fetchPatient = (id: string): AppThunk => async (dispatch) => {
   dispatch(fetchPatientSuccess(patient))
 }
 
-function validatePatient(patient: Patient) {
-  const error: Error = {}
-
-  const regexContainsNumber = /\d/
-
-  if (!patient.givenName) {
-    error.givenName = 'patient.errors.patientGivenNameFeedback'
-  }
-
-  if (patient.dateOfBirth) {
-    const today = new Date(Date.now())
-    const dob = parseISO(patient.dateOfBirth)
-    if (isAfter(dob, today)) {
-      error.dateOfBirth = 'patient.errors.patientDateOfBirthFeedback'
-    }
-  }
-
-  if (patient.suffix) {
-    if (regexContainsNumber.test(patient.suffix)) {
-      error.suffix = 'patient.errors.patientNumInSuffixFeedback'
-    }
-  }
-
-  if (patient.prefix) {
-    if (regexContainsNumber.test(patient.prefix)) {
-      error.prefix = 'patient.errors.patientNumInPrefixFeedback'
-    }
-  }
-
-  if (patient.familyName) {
-    if (regexContainsNumber.test(patient.familyName)) {
-      error.familyName = 'patient.errors.patientNumInFamilyNameFeedback'
-    }
-  }
-
-  if (patient.preferredLanguage) {
-    if (regexContainsNumber.test(patient.preferredLanguage)) {
-      error.preferredLanguage = 'patient.errors.patientNumInPreferredLanguageFeedback'
-    }
-  }
-
-  if (patient.emails) {
-    const errors: (string | undefined)[] = []
-    patient.emails.forEach((email) => {
-      if (!validator.isEmail(email.value)) {
-        errors.push('patient.errors.invalidEmail')
-      } else {
-        errors.push(undefined)
-      }
-    })
-    // Only add to error obj if there's an error
-    if (errors.some((value) => value !== undefined)) {
-      error.emails = errors
-    }
-  }
-
-  if (patient.phoneNumbers) {
-    const errors: (string | undefined)[] = []
-    patient.phoneNumbers.forEach((phoneNumber) => {
-      if (!validator.isMobilePhone(phoneNumber.value)) {
-        errors.push('patient.errors.invalidPhoneNumber')
-      } else {
-        errors.push(undefined)
-      }
-    })
-    // Only add to error obj if there's an error
-    if (errors.some((value) => value !== undefined)) {
-      error.phoneNumbers = errors
-    }
-  }
-
-  return error
-}
-
 export const createPatient = (
   patient: Patient,
   onSuccess?: (patient: Patient) => void,
 ): AppThunk => async (dispatch) => {
   dispatch(createPatientStart())
-
-  const cleanPatient = cleanupPatient(patient)
-  const newPatientError = validatePatient(cleanPatient)
-
-  if (isEmpty(newPatientError)) {
-    const newPatient = await PatientRepository.save(cleanPatient)
-    dispatch(createPatientSuccess())
-
-    if (onSuccess) {
-      onSuccess(newPatient)
-    }
-  } else {
-    newPatientError.message = 'patient.errors.createPatientError'
-    dispatch(createPatientError(newPatientError))
+  const newPatient = await PatientRepository.save(patient)
+  dispatch(createPatientSuccess())
+  if (onSuccess) {
+    onSuccess(newPatient)
   }
 }
 
@@ -283,19 +197,11 @@ export const updatePatient = (
 ): AppThunk => async (dispatch) => {
   dispatch(updatePatientStart())
 
-  const cleanPatient = cleanupPatient(patient)
-  const updateError = validatePatient(cleanPatient)
+  const updatedPatient = await PatientRepository.saveOrUpdate(patient)
+  dispatch(updatePatientSuccess(updatedPatient))
 
-  if (isEmpty(updateError)) {
-    const updatedPatient = await PatientRepository.saveOrUpdate(cleanPatient)
-    dispatch(updatePatientSuccess(updatedPatient))
-
-    if (onSuccess) {
-      onSuccess(updatedPatient)
-    }
-  } else {
-    updateError.message = 'patient.errors.updatePatientError'
-    dispatch(updatePatientError(updateError))
+  if (onSuccess) {
+    onSuccess(updatedPatient)
   }
 }
 

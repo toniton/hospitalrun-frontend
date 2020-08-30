@@ -13,7 +13,7 @@ import TextInputWithLabelFormGroup from '../shared/components/input/TextInputWit
 import useDebounce from '../shared/hooks/useDebounce'
 import useTranslator from '../shared/hooks/useTranslator'
 import Medication from '../shared/model/Medication'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import { RootState } from '../shared/store'
 import { searchMedications } from './medications-slice'
 

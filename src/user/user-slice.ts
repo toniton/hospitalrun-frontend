@@ -1,8 +1,11 @@
-/* eslint-disable no-underscore-dangle */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import {
+  showNotification,
+  NotificationTypes,
+} from '../shared/components/notifications/notifications-slice'
 import { remoteDb } from '../shared/config/pouchdb'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import User from '../shared/model/User'
 import { AppThunk } from '../shared/store'
 
@@ -76,14 +79,23 @@ const userSlice = createSlice({
 
 export const { fetchPermissions, loginError, loginSuccess, logoutSuccess } = userSlice.actions
 
+type AuthUser = PouchDB.Authentication.User &
+  PouchDB.Authentication.PutUserOptions &
+  PouchDB.Core.IdMeta &
+  PouchDB.Core.GetMeta
 export const getCurrentSession = (username: string): AppThunk => async (dispatch) => {
-  const user = await remoteDb.getUser(username)
+  const user: AuthUser = await remoteDb.getUser(username)
+  const {
+    _id: id,
+    metadata: { givenName, familyName },
+  } = user
+
   dispatch(
     loginSuccess({
       user: {
-        id: user._id,
-        givenName: (user as any).metadata.givenName,
-        familyName: (user as any).metadata.familyName,
+        id,
+        givenName,
+        familyName,
       },
       permissions: initialState.permissions,
     }),
@@ -93,18 +105,16 @@ export const getCurrentSession = (username: string): AppThunk => async (dispatch
 export const login = (username: string, password: string): AppThunk => async (dispatch) => {
   try {
     const response = await remoteDb.logIn(username, password)
-    const user = await remoteDb.getUser(response.name)
+    dispatch(getCurrentSession(response.name))
+  } catch (error) {
     dispatch(
-      loginSuccess({
-        user: {
-          id: user._id,
-          givenName: (user as any).metadata.givenName,
-          familyName: (user as any).metadata.familyName,
-        },
-        permissions: initialState.permissions,
+      showNotification({
+        id: 'LOGIN_FAILURE',
+        message: 'user.login.error.message.required',
+        type: NotificationTypes.FAILURE,
+        delay: 3000,
       }),
     )
-  } catch (error) {
     if (!username || !password) {
       dispatch(
         loginError({

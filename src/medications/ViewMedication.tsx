@@ -14,7 +14,7 @@ import TextInputWithLabelFormGroup from '../shared/components/input/TextInputWit
 import useTranslator from '../shared/hooks/useTranslator'
 import Medication from '../shared/model/Medication'
 import Patient from '../shared/model/Patient'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import { RootState } from '../shared/store'
 import { cancelMedication, updateMedication, fetchMedication } from './medication-slice'
 

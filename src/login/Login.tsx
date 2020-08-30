@@ -1,35 +1,31 @@
-import { Alert, Container, Panel } from '@hospitalrun/components'
-import React, { useState } from 'react'
-import Button from 'react-bootstrap/Button'
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
+import { Input, Button, Form, Card } from 'antd'
+import { Store } from 'antd/lib/form/interface'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
-import TextInputWithLabelFormGroup from '../shared/components/input/TextInputWithLabelFormGroup'
-import useTranslator from '../shared/hooks/useTranslator'
+import { NotificationBox } from '../shared/components/notifications/notifications'
+import { useNotification } from '../shared/components/notifications/notifications-slice'
+// import useTranslator from '../shared/hooks/useTranslator'
 import logo from '../shared/static/images/logo-on-transparent.png'
 import { RootState } from '../shared/store'
 import { login } from '../user/user-slice'
 
+export type LoginFormData = {
+  username: string
+  password: string
+}
+
 const Login = () => {
+  const [form] = Form.useForm()
   const dispatch = useDispatch()
-  const { t } = useTranslator()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const { loginError, user } = useSelector((root: RootState) => root.user)
+  const { notifications } = useNotification('LOGIN_FAILURE')
+  // const { t } = useTranslator()
+  const { user } = useSelector((root: RootState) => root.user)
 
-  const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.currentTarget
-    setUsername(value)
-  }
-
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.currentTarget
-    setPassword(value)
-  }
-
-  const onSignInClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    await dispatch(login(username, password))
+  const onSignInSubmit = async (data: Store) => {
+    await dispatch(login(data.username, data.password))
   }
 
   if (user) {
@@ -37,42 +33,45 @@ const Login = () => {
   }
 
   return (
-    <>
-      <Container className="container align-items-center" style={{ width: '50%' }}>
-        <img src={logo} alt="HospitalRun" style={{ width: '100%', textAlign: 'center' }} />
-        <form>
-          <Panel title="Please Sign In" color="primary">
-            {loginError?.message && (
-              <Alert color="danger" message={t(loginError?.message)} title="Unable to login" />
-            )}
-            <TextInputWithLabelFormGroup
-              isEditable
-              label="username"
+    <div className="d-flex align-items-center min-vh-100">
+      <div className="container" style={{ width: '40%' }}>
+        <img
+          src={logo}
+          alt="HospitalRun"
+          style={{ display: 'block', margin: 'auto', maxHeight: '56px' }}
+        />
+        <Form form={form} layout="vertical" onFinish={onSignInSubmit}>
+          <Card title="Sign In">
+            {notifications &&
+              notifications.map((notification) => (
+                <NotificationBox key={notification.key} notification={notification} />
+              ))}
+            <Form.Item
+              label="Username"
               name="username"
-              value={username}
-              onChange={onUsernameChange}
-              isRequired
-              isInvalid={!!loginError?.username && !username}
-              feedback={t(loginError?.username)}
-            />
-            <TextInputWithLabelFormGroup
-              isEditable
-              type="password"
-              label="password"
+              rules={[{ required: true, message: 'Please input your username!' }]}
+            >
+              <Input id="username" name="username" type="text" />
+            </Form.Item>
+            <Form.Item
+              label="Password"
               name="password"
-              value={password}
-              onChange={onPasswordChange}
-              isRequired
-              isInvalid={!!loginError?.password && !password}
-              feedback={t(loginError?.password)}
-            />
-            <Button type="submit" block onClick={onSignInClick}>
+              rules={[{ required: true, message: 'Please input your password!' }]}
+            >
+              <Input.Password
+                id="password"
+                name="password"
+                type="password"
+                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+              />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" block>
               Sign In
             </Button>
-          </Panel>
-        </form>
-      </Container>
-    </>
+          </Card>
+        </Form>
+      </div>
+    </div>
   )
 }
 

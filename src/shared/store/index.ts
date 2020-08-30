@@ -1,5 +1,6 @@
-import { configureStore, combineReducers, Action } from '@reduxjs/toolkit'
-import ReduxThunk, { ThunkAction } from 'redux-thunk'
+import { configureStore, combineReducers, Action, Middleware } from '@reduxjs/toolkit'
+import { createLogger } from 'redux-logger'
+import ReduxThunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk'
 
 import imaging from '../../imagings/imaging-slice'
 import imagings from '../../imagings/imagings-slice'
@@ -15,6 +16,7 @@ import appointment from '../../scheduling/appointments/appointment-slice'
 import appointments from '../../scheduling/appointments/appointments-slice'
 import user from '../../user/user-slice'
 import components from '../components/component-slice'
+import { notifications } from '../components/notifications/notifications-slice'
 
 const reducer = combineReducers({
   patient,
@@ -31,11 +33,19 @@ const reducer = combineReducers({
   medications,
   imagings,
   imaging,
+  notifications,
 })
+
+const middleware: (ThunkMiddleware | Middleware)[] = [ReduxThunk]
+
+if (process.env.NODE_ENV !== 'production') {
+  const logger = createLogger()
+  middleware.push(logger)
+}
 
 const store = configureStore({
   reducer,
-  middleware: [ReduxThunk],
+  middleware,
 })
 
 export type AppDispatch = typeof store.dispatch

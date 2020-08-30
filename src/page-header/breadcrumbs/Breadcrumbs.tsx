@@ -1,13 +1,12 @@
-import { Breadcrumb, BreadcrumbItem } from '@hospitalrun/components'
+import { Breadcrumb } from 'antd'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import useTranslator from '../../shared/hooks/useTranslator'
 import { RootState } from '../../shared/store'
 
-const Breadcrumbs = () => {
-  const history = useHistory()
+export const Breadcrumbs = () => {
   const { t } = useTranslator()
   const { breadcrumbs } = useSelector((state: RootState) => state.breadcrumbs)
 
@@ -16,19 +15,16 @@ const Breadcrumbs = () => {
   }
 
   return (
-    <Breadcrumb>
+    <Breadcrumb style={{ marginBottom: '16px' }}>
       {breadcrumbs.map(({ i18nKey, text, location }, index) => {
         const isLast = index === breadcrumbs.length - 1
-        const onClick = !isLast ? () => history.push(location) : undefined
-
+        const url = isLast ? location : '#'
         return (
-          <BreadcrumbItem key={location} active={isLast} onClick={onClick}>
-            {i18nKey ? t(i18nKey) : text}
-          </BreadcrumbItem>
+          <Breadcrumb.Item key={location}>
+            <Link to={url}>{i18nKey ? t(i18nKey) : text}</Link>
+          </Breadcrumb.Item>
         )
       })}
     </Breadcrumb>
   )
 }
-
-export default Breadcrumbs

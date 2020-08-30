@@ -11,25 +11,24 @@ import { mocked } from 'ts-jest/utils'
 
 import * as ButtonBarProvider from '../../../page-header/button-toolbar/ButtonBarProvider'
 import * as titleUtil from '../../../page-header/title/useTitle'
-import Allergies from '../../../patients/allergies/Allergies'
-import AppointmentsList from '../../../patients/appointments/AppointmentsList'
-import CarePlanTab from '../../../patients/care-plans/CarePlanTab'
-import Diagnoses from '../../../patients/diagnoses/Diagnoses'
-import GeneralInformation from '../../../patients/GeneralInformation'
-import LabsTab from '../../../patients/labs/LabsTab'
-import NotesTab from '../../../patients/notes/NoteTab'
+import { GeneralInformation } from '../../../patients/forms/GeneralInformation'
+import ViewPatient from '../../../patients/pages/view/ViewPatient'
 import * as patientSlice from '../../../patients/patient-slice'
-import RelatedPersonTab from '../../../patients/related-persons/RelatedPersonTab'
-import ViewPatient from '../../../patients/view/ViewPatient'
+import Allergies from '../../../patients/tabs/allergies/Allergies'
+import AppointmentsList from '../../../patients/tabs/appointments/AppointmentsList'
+import CarePlanTab from '../../../patients/tabs/care-plans/CarePlanTab'
+import Diagnoses from '../../../patients/tabs/diagnoses/Diagnoses'
+import LabsTab from '../../../patients/tabs/labs/LabsTab'
+import RelatedPersonTab from '../../../patients/tabs/related-persons/RelatedPersonTab'
 import PatientRepository from '../../../shared/db/PatientRepository'
 import Patient from '../../../shared/model/Patient'
-import Permissions from '../../../shared/model/Permissions'
+import { Permissions } from '../../../shared/model/Permissions'
 import { RootState } from '../../../shared/store'
 
 const mockStore = createMockStore<RootState, any>([thunk])
 
 describe('ViewPatient', () => {
-  const patient = {
+  const patient = ({
     id: '123',
     prefix: 'prefix',
     givenName: 'givenName',
@@ -44,7 +43,7 @@ describe('ViewPatient', () => {
     address: 'address',
     code: 'P00001',
     dateOfBirth: new Date().toISOString(),
-  } as Patient
+  } as unknown) as Patient
 
   let history: any
   let store: MockStore

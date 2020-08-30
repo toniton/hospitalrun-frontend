@@ -10,7 +10,7 @@ import Visit from './Visit'
 
 export default interface Patient extends AbstractDBModel, Name, ContactInformation {
   sex: string
-  dateOfBirth: string
+  dateOfBirth: string | any
   isApproximateDateOfBirth: boolean
   preferredLanguage?: string
   occupation?: string

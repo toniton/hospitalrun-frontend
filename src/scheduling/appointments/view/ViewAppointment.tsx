@@ -7,7 +7,7 @@ import useAddBreadcrumbs from '../../../page-header/breadcrumbs/useAddBreadcrumb
 import { useButtonToolbarSetter } from '../../../page-header/button-toolbar/ButtonBarProvider'
 import useTitle from '../../../page-header/title/useTitle'
 import useTranslator from '../../../shared/hooks/useTranslator'
-import Permissions from '../../../shared/model/Permissions'
+import { Permissions } from '../../../shared/model/Permissions'
 import { RootState } from '../../../shared/store'
 import { fetchAppointment, deleteAppointment } from '../appointment-slice'
 import AppointmentDetailForm from '../AppointmentDetailForm'

@@ -13,7 +13,7 @@ import TextInputWithLabelFormGroup from '../shared/components/input/TextInputWit
 import useDebounce from '../shared/hooks/useDebounce'
 import useTranslator from '../shared/hooks/useTranslator'
 import Lab from '../shared/model/Lab'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import { RootState } from '../shared/store'
 import { searchLabs } from './labs-slice'
 

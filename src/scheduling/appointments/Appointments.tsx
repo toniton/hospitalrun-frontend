@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Switch } from 'react-router-dom'
 
 import PrivateRoute from '../../shared/components/PrivateRoute'
-import Permissions from '../../shared/model/Permissions'
+import { Permissions } from '../../shared/model/Permissions'
 import { RootState } from '../../shared/store'
 import EditAppointment from './edit/EditAppointment'
 import NewAppointment from './new/NewAppointment'

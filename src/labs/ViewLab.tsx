@@ -10,7 +10,7 @@ import TextFieldWithLabelFormGroup from '../shared/components/input/TextFieldWit
 import useTranslator from '../shared/hooks/useTranslator'
 import Lab from '../shared/model/Lab'
 import Patient from '../shared/model/Patient'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import { RootState } from '../shared/store'
 import { cancelLab, completeLab, updateLab, fetchLab } from './lab-slice'
 

@@ -8,8 +8,8 @@ import { Router } from 'react-router-dom'
 import createMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 
-import Sidebar from '../../../shared/components/Sidebar'
-import Permissions from '../../../shared/model/Permissions'
+import Sidebar from '../../../shared/components/sidebar/Sidebar'
+import { Permissions } from '../../../shared/model/Permissions'
 import { RootState } from '../../../shared/store'
 
 const mockStore = createMockStore<RootState, any>([thunk])

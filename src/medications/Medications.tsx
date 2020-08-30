@@ -4,7 +4,7 @@ import { Switch } from 'react-router-dom'
 
 import useAddBreadcrumbs from '../page-header/breadcrumbs/useAddBreadcrumbs'
 import PrivateRoute from '../shared/components/PrivateRoute'
-import Permissions from '../shared/model/Permissions'
+import { Permissions } from '../shared/model/Permissions'
 import { RootState } from '../shared/store'
 import NewMedicationRequest from './requests/NewMedicationRequest'
 import ViewMedication from './ViewMedication'

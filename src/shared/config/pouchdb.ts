@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable camelcase */
 import PouchDB from 'pouchdb'
 import PouchAuth from 'pouchdb-authentication'
 import PouchdbFind from 'pouchdb-find'
@@ -77,4 +76,4 @@ export const schema = [
   },
 ]
 export const relationalDb = localDb.setSchema(schema)
-export const remoteDb = serverDb as PouchDB.Database
+export const remoteDb = serverDb

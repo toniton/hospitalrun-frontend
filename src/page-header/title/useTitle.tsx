@@ -8,5 +8,5 @@ export default function useTitle(title: string): void {
 
   useEffect(() => {
     dispatch(updateTitle(title))
-  })
+  }, [title, dispatch])
 }
