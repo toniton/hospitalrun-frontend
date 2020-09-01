@@ -10,7 +10,7 @@ interface NewAllergyModalProps {
   patientId: string
 }
 
-export const NewAllergyModal = (props: NewAllergyModalProps) => {
+export const AddAllergyModal = (props: NewAllergyModalProps) => {
   const { patientId } = props
   const { t } = useTranslator()
   const [mutate] = useAddAllergy()

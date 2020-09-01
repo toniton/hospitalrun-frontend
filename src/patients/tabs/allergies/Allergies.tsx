@@ -7,8 +7,8 @@ import useAddBreadcrumbs from '../../../page-header/breadcrumbs/useAddBreadcrumb
 import Patient from '../../../shared/model/Patient'
 import { Permissions } from '../../../shared/model/Permissions'
 import { RootState } from '../../../shared/store'
+import { AddAllergyModal } from './AddAllergyModal'
 import { AllergiesList } from './AllergiesList'
-import { NewAllergyModal } from './NewAllergyModal'
 import ViewAllergy from './ViewAllergy'
 
 interface AllergiesProps {
@@ -30,7 +30,7 @@ const Allergies = (props: AllergiesProps) => {
   return (
     <Card bordered={false}>
       <Space style={{ marginBottom: 16 }}>
-        {permissions.includes(Permissions.AddAllergy) && <NewAllergyModal patientId={patient.id} />}
+        {permissions.includes(Permissions.AddAllergy) && <AddAllergyModal patientId={patient.id} />}
       </Space>
       <br />
       <Switch>

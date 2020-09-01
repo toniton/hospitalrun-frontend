@@ -21,7 +21,7 @@ import { AppointmentsList } from '../../tabs/appointments/AppointmentsList'
 import CarePlanTab from '../../tabs/care-plans/CarePlanTab'
 import { Diagnoses } from '../../tabs/diagnoses/Diagnoses'
 import LabsTab from '../../tabs/labs/LabsTab'
-import NoteTab from '../../tabs/notes/NoteTab'
+import { Notes } from '../../tabs/notes/Notes'
 import { RelatedPersonTab } from '../../tabs/related-persons/RelatedPersonTab'
 import VisitTab from '../../tabs/visits/VisitTab'
 
@@ -104,7 +104,7 @@ const ViewPatient = () => {
       </TabPane>
       <TabPane tab={t('patient.notes.label')} key="notes">
         <Route exact path={`${path}/notes`}>
-          <NoteTab patient={patient} />
+          <Notes patient={patient} />
         </Route>
       </TabPane>
       <TabPane tab={t('patient.labs.label')} key="labs">
