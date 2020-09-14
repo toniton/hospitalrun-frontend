@@ -18,12 +18,12 @@ import { GeneralInformation } from '../../forms/GeneralInformation'
 import { fetchPatient } from '../../patient-slice'
 import Allergies from '../../tabs/allergies/Allergies'
 import { AppointmentsList } from '../../tabs/appointments/AppointmentsList'
-import CarePlanTab from '../../tabs/care-plans/CarePlanTab'
+import { CarePlans } from '../../tabs/care-plans/CarePlans'
 import { Diagnoses } from '../../tabs/diagnoses/Diagnoses'
 import { LabRequests } from '../../tabs/lab-requests/LabRequests'
 import { Notes } from '../../tabs/notes/Notes'
 import { RelatedPersonTab } from '../../tabs/related-persons/RelatedPersonTab'
-import VisitTab from '../../tabs/visits/VisitTab'
+import { Visit } from '../../tabs/visits/Visit'
 
 const { TabPane } = Tabs
 
@@ -82,7 +82,7 @@ const ViewPatient = () => {
           <GeneralInformation patient={patient} />
         </Route>
       </TabPane>
-      <TabPane tab={t('patient.relatedPersons.label')} key="relatedPersons">
+      <TabPane tab={t('patient.relatedPersons.label')} key="relatedpersons">
         <Route exact path={`${path}/relatedpersons`}>
           <RelatedPersonTab patient={patient} />
         </Route>
@@ -112,14 +112,14 @@ const ViewPatient = () => {
           <LabRequests patientId={patient.id} />
         </Route>
       </TabPane>
-      <TabPane tab={t('patient.carePlan.label')} key="carePlan">
+      <TabPane tab={t('patient.carePlan.label')} key="care-plans">
         <Route path={`${path}/care-plans`}>
-          <CarePlanTab />
+          <CarePlans />
         </Route>
       </TabPane>
       <TabPane tab={t('patient.visits.label')} key="visits">
         <Route path={`${path}/visits`}>
-          <VisitTab />
+          <Visit />
         </Route>
       </TabPane>
     </Tabs>
