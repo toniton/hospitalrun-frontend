@@ -1,14 +1,19 @@
-import { Calendar, Button } from '@hospitalrun/components'
+/* eslint import/order: "off" */
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import listPlugin from '@fullcalendar/list'
+import { Button, Card, Space } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
 import useAddBreadcrumbs from '../../page-header/breadcrumbs/useAddBreadcrumbs'
-import { useButtonToolbarSetter } from '../../page-header/button-toolbar/ButtonBarProvider'
 import useTitle from '../../page-header/title/useTitle'
 import PatientRepository from '../../shared/db/PatientRepository'
 import useTranslator from '../../shared/hooks/useTranslator'
 import { RootState } from '../../shared/store'
+import { Permissions } from '../../shared/model/Permissions'
 import { fetchAppointments } from './appointments-slice'
 
 interface Event {
@@ -24,32 +29,16 @@ const breadcrumbs = [{ i18nKey: 'scheduling.appointments.label', location: '/app
 const ViewAppointments = () => {
   const { t } = useTranslator()
   const history = useHistory()
-  useTitle(t('scheduling.appointments.label'))
   const dispatch = useDispatch()
+  useTitle(t('scheduling.appointments.label'))
   const { appointments } = useSelector((state: RootState) => state.appointments)
   const [events, setEvents] = useState<Event[]>([])
-  const setButtonToolBar = useButtonToolbarSetter()
+  const { permissions } = useSelector((state: RootState) => state.user)
   useAddBreadcrumbs(breadcrumbs, true)
 
   useEffect(() => {
     dispatch(fetchAppointments())
-    setButtonToolBar([
-      <Button
-        key="newAppointmentButton"
-        outlined
-        color="success"
-        icon="appointment-add"
-        onClick={() => history.push('/appointments/new')}
-      >
-        {t('scheduling.appointments.new')}
-      </Button>,
-    ])
-
-    return () => {
-      setButtonToolBar([])
-    }
-  }, [dispatch, setButtonToolBar, history, t])
-
+  }, [dispatch])
   useEffect(() => {
     const getAppointments = async () => {
       const newEvents = await Promise.all(
@@ -74,14 +63,28 @@ const ViewAppointments = () => {
   }, [appointments])
 
   return (
-    <div>
-      <Calendar
+    <Card>
+      <Space style={{ marginBottom: 16 }}>
+        {permissions.includes(Permissions.WriteAppointments) && (
+          <Button onClick={() => history.push('/appointments/new')}>
+            {t('scheduling.appointments.new')}
+          </Button>
+        )}
+      </Space>
+      <FullCalendar
+        plugins={[dayGridPlugin, listPlugin, timeGridPlugin]}
         events={events}
-        onEventClick={(event) => {
-          history.push(`/appointments/${event.id}`)
+        eventClick={(info) => {
+          history.push(`/appointments/${info.event.id}`)
         }}
+        headerToolbar={{
+          start: 'title',
+          center: '',
+          end: 'today dayGridMonth list prev,next',
+        }}
+        initialView="dayGridMonth"
       />
-    </div>
+    </Card>
   )
 }
 

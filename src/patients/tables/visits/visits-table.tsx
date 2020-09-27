@@ -22,7 +22,7 @@ export const VisitsTable = (props: Props) => {
     (rowData: Patient) => {
       history.push(`/patients/${patientId}/visits/${rowData.id}`)
     },
-    [history],
+    [history, patientId],
   )
 
   if (data === undefined) {
